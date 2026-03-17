@@ -39,6 +39,7 @@ data/processed/*
 artifacts/reports/*
 artifacts/figures/*
 artifacts/logs/*
+notebooks/artifacts/logs/*
 !artifacts/reports/.gitkeep
 !artifacts/figures/.gitkeep
 !artifacts/logs/.gitkeep
