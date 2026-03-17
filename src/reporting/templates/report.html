@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ portfolio_name }} â€” Analytics Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; color: #1f2937; background: #f9fafb; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  /* Header */
+  .report-header { background: #1e3a5f; color: white; padding: 32px 40px; border-radius: 12px; margin-bottom: 32px; }
+  .report-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .report-header .subtitle { font-size: 14px; opacity: 0.75; }
+  .report-header .meta { margin-top: 16px; display: flex; gap: 32px; font-size: 13px; opacity: 0.85; }
+
+  /* Section */
+  .section { background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); padding: 28px 32px; margin-bottom: 24px; }
+  .section h2 { font-size: 18px; font-weight: 700; color: #1e3a5f; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; }
+  .section h3 { font-size: 15px; font-weight: 600; color: #374151; margin: 20px 0 10px; }
+
+  /* Metric cards */
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; margin-bottom: 8px; }
+  .metric-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+  .metric-card .label { font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .metric-card .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  .metric-card.positive .value { color: #16a34a; }
+  .metric-card.negative .value { color: #dc2626; }
+  .metric-card.neutral .value { color: #1e3a5f; }
+
+  /* Charts */
+  .chart-row { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .chart-row.two-col { grid-template-columns: 1fr 1fr; }
+  .chart-img { width: 100%; border-radius: 8px; border: 1px solid #e5e7eb; }
+  .chart-caption { font-size: 11px; color: #9ca3af; text-align: center; margin-top: 6px; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #f3f4f6; padding: 10px 14px; text-align: left; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; }
+  td { padding: 9px 14px; border-bottom: 1px solid #f3f4f6; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+  .right { text-align: right; }
+  .positive { color: #16a34a; font-weight: 600; }
+  .negative { color: #dc2626; font-weight: 600; }
+
+  /* Commentary */
+  .commentary { background: #f0f7ff; border-left: 4px solid #2563eb; padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+  .commentary p { line-height: 1.7; color: #374151; }
+
+  /* Footer */
+  .footer { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+
+  @media print {
+    body { background: white; }
+    .section { box-shadow: none; border: 1px solid #e5e7eb; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- Header -->
+<div class="report-header">
+  <h1>{{ portfolio_name }}</h1>
+  <div class="subtitle">Portfolio Analytics &amp; Risk Report</div>
+  <div class="meta">
+    <span>ðŸ“… Report Date: <strong>{{ report_date }}</strong></span>
+    <span>ðŸ“Š Period: <strong>{{ period_start }}</strong> to <strong>{{ period_end }}</strong></span>
+    <span>ðŸ·ï¸ Assets: <strong>{{ n_assets }}</strong></span>
+  </div>
+</div>
+
+<!-- Performance Summary -->
+<div class="section">
+  <h2>ðŸ“ˆ Performance Summary</h2>
+  <div class="metric-grid">
+    <div class="metric-card {{ 'positive' if perf.cumulative_return > 0 else 'negative' }}">
+      <div class="label">Cumulative Return</div>
+      <div class="value">{{ "%.2f"|format(perf.cumulative_return * 100) }}%</div>
+    </div>
+    <div class="metric-card {{ 'positive' if perf.annualized_return > 0 else 'negative' }}">
+      <div class="label">Annualized Return</div>
+      <div class="value">{{ "%.2f"|format(perf.annualized_return * 100) }}%</div>
+    </div>
+    <div class="metric-card neutral">
+      <div class="label">Annualized Volatility</div>
+      <div class="value">{{ "%.2f"|format(perf.annualized_volatility * 100) }}%</div>
+    </div>
+    <div class="metric-card {{ 'positive' if perf.sharpe_ratio > 1 else ('neutral' if perf.sharpe_ratio > 0 else 'negative') }}">
+      <div class="label">Sharpe Ratio</div>
+      <div class="value">{{ "%.2f"|format(perf.sharpe_ratio) }}</div>
+    </div>
+    <div class="metric-card {{ 'positive' if perf.sortino_ratio > 1 else ('neutral' if perf.sortino_ratio > 0 else 'negative') }}">
+      <div class="label">Sortino Ratio</div>
+      <div class="value">{{ "%.2f"|format(perf.sortino_ratio) }}</div>
+    </div>
+    <div class="metric-card neutral">
+      <div class="label">Hit Ratio</div>
+      <div class="value">{{ "%.1f"|format(perf.hit_ratio * 100) }}%</div>
+    </div>
+    <div class="metric-card positive">
+      <div class="label">Best Day</div>
+      <div class="value">+{{ "%.2f"|format(perf.best_day_return * 100) }}%</div>
+    </div>
+    <div class="metric-card negative">
+      <div class="label">Worst Day</div>
+      <div class="value">{{ "%.2f"|format(perf.worst_day_return * 100) }}%</div>
+    </div>
+  </div>
+
+  <div class="chart-row" style="margin-top:20px;">
+    {% if charts.cumulative_returns %}
+    <div>
+      <img class="chart-img" src="{{ charts.cumulative_returns }}" alt="Cumulative Returns">
+      <p class="chart-caption">Growth of $1 invested at portfolio inception</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if charts.monthly_returns_heatmap %}
+  <h3>Monthly Returns</h3>
+  <img class="chart-img" src="{{ charts.monthly_returns_heatmap }}" alt="Monthly Returns Heatmap">
+  {% endif %}
+</div>
+
+<!-- Risk Analytics -->
+<div class="section">
+  <h2>âš ï¸ Risk Analytics</h2>
+  <div class="metric-grid">
+    <div class="metric-card negative">
+      <div class="label">Max Drawdown</div>
+      <div class="value">{{ "%.2f"|format(risk.max_drawdown * 100) }}%</div>
+    </div>
+    <div class="metric-card neutral">
+      <div class="label">VaR 95% (1-day)</div>
+      <div class="value">{{ "%.2f"|format(risk['var_95_1d'] * 100) }}%</div>
+    </div>
+    <div class="metric-card neutral">
+      <div class="label">CVaR 95% (1-day)</div>
+      <div class="value">{{ "%.2f"|format(risk['cvar_95_1d'] * 100) }}%</div>
+    </div>
+    <div class="metric-card neutral">
+      <div class="label">Downside Deviation</div>
+      <div class="value">{{ "%.2f"|format(risk.downside_deviation_annual * 100) }}%</div>
+    </div>
+    <div class="metric-card neutral">
+      <div class="label">Return Skewness</div>
+      <div class="value">{{ "%.2f"|format(risk.return_skewness) }}</div>
+    </div>
+    <div class="metric-card neutral">
+      <div class="label">Excess Kurtosis</div>
+      <div class="value">{{ "%.2f"|format(risk.return_excess_kurtosis) }}</div>
+    </div>
+  </div>
+
+  <div class="chart-row two-col" style="margin-top:20px;">
+    {% if charts.drawdown %}
+    <div>
+      <img class="chart-img" src="{{ charts.drawdown }}" alt="Drawdown">
+      <p class="chart-caption">Drawdown from rolling peak (underwater curve)</p>
+    </div>
+    {% endif %}
+    {% if charts.rolling_volatility %}
+    <div>
+      <img class="chart-img" src="{{ charts.rolling_volatility }}" alt="Rolling Volatility">
+      <p class="chart-caption">63-day rolling annualized volatility</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if charts.return_distribution %}
+  <h3>Return Distribution</h3>
+  <img class="chart-img" src="{{ charts.return_distribution }}" alt="Return Distribution">
+  <p class="chart-caption">Empirical daily return distribution vs. normal. VaR and CVaR thresholds shown.</p>
+  {% endif %}
+</div>
+
+<!-- Factor Attribution -->
+<div class="section">
+  <h2>ðŸ”¬ Factor Attribution (Fama-French 3-Factor)</h2>
+
+  <div class="commentary">
+    <p>{{ attribution.style_summary }}</p>
+  </div>
+
+  {% for comment in attribution.commentary %}
+  <div class="commentary">
+    <p>{{ comment }}</p>
+  </div>
+  {% endfor %}
+
+  <h3>Factor Loadings</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Factor</th>
+        <th class="right">Loading (Beta)</th>
+        <th class="right">P-value</th>
+        <th class="right">Significant?</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in attribution.attribution_table.itertuples() %}
+      <tr>
+        <td>{{ row.Factor }}</td>
+        <td class="right {{ 'positive' if row.Loading > 0 else 'negative' }}">{{ "%.4f"|format(row.Loading) }}</td>
+        <td class="right">{{ "%.3f"|format(row._3) }}</td>
+        <td class="right">{{ "âœ“" if row._4 else "â€”" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="margin-top:12px; font-size:12px; color:#6b7280;">
+    RÂ² = {{ "%.1f"|format(attribution.r_squared * 100) }}% &nbsp;|&nbsp;
+    N = {{ factor_model.n_obs }} observations &nbsp;|&nbsp;
+    Heteroskedasticity-robust (HC3) standard errors
+  </div>
+
+  {% if charts.factor_loadings %}
+  <div style="margin-top:20px;">
+    <img class="chart-img" src="{{ charts.factor_loadings }}" alt="Factor Loadings">
+  </div>
+  {% endif %}
+</div>
+
+<!-- Portfolio Composition -->
+<div class="section">
+  <h2>ðŸ—ï¸ Portfolio Composition</h2>
+  <div class="chart-row two-col">
+    {% if charts.sector_weights %}
+    <div>
+      <img class="chart-img" src="{{ charts.sector_weights }}" alt="Sector Weights">
+    </div>
+    {% endif %}
+    <div>
+      <h3>Holdings Detail</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Asset Class</th>
+            <th>Sector</th>
+            <th class="right">Quantity</th>
+            <th class="right">Avg Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in holdings.itertuples() %}
+          <tr>
+            <td><strong>{{ row.ticker }}</strong></td>
+            <td>{{ row.asset_class }}</td>
+            <td>{{ row.sector }}</td>
+            <td class="right">{{ row.quantity }}</td>
+            <td class="right">${{ "%.2f"|format(row.avg_cost) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Methodology -->
+<div class="section">
+  <h2>ðŸ“‹ Methodology Notes</h2>
+  <table>
+    <tbody>
+      <tr><td><strong>Return convention</strong></td><td>Simple daily returns: (P_t / P_{t-1}) - 1 using adjusted close prices</td></tr>
+      <tr><td><strong>Annualization</strong></td><td>{{ trading_days }} trading days per year</td></tr>
+      <tr><td><strong>Sharpe ratio</strong></td><td>Annualized excess return over risk-free rate, divided by annualized volatility</td></tr>
+      <tr><td><strong>VaR method</strong></td><td>Historical simulation at {{ var_confidence }}% confidence, 1-day horizon</td></tr>
+      <tr><td><strong>CVaR</strong></td><td>Expected loss in the tail beyond VaR (Expected Shortfall)</td></tr>
+      <tr><td><strong>Factor model</strong></td><td>OLS regression on Fama-French 3-factor daily data (Kenneth French Data Library)</td></tr>
+      <tr><td><strong>Regression SEs</strong></td><td>Heteroskedasticity-robust (HC3)</td></tr>
+      <tr><td><strong>Risk-free rate</strong></td><td>{{ "%.1f"|format(risk_free_rate * 100) }}% annual (from FF daily RF series)</td></tr>
+      <tr><td><strong>Price source</strong></td><td>Yahoo Finance adjusted close prices via yfinance</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  Generated by Portfolio Analytics Platform &nbsp;|&nbsp; {{ report_date }} &nbsp;|&nbsp;
+  For internal use only. Not investment advice.
+</div>
+
+</div>
+</body>
+</html>
+

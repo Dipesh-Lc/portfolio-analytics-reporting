@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Conda
+*.conda
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (keep samples, exclude fetched data)
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/samples/
+
+# Database
+*.db
+*.sqlite
+
+# Artifacts
+artifacts/reports/*
+artifacts/figures/*
+artifacts/logs/*
+!artifacts/reports/.gitkeep
+!artifacts/figures/.gitkeep
+!artifacts/logs/.gitkeep
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+
+pytest_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/

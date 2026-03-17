@@ -1,0 +1,9 @@
+date,ticker,quantity,avg_cost,asset_class,sector,region
+2024-01-02,AAPL,50,185.20,Equity,Technology,US
+2024-01-02,MSFT,35,372.40,Equity,Technology,US
+2024-01-02,JNJ,40,151.10,Equity,Healthcare,US
+2024-01-02,XOM,30,100.50,Equity,Energy,US
+2024-01-02,SPY,20,470.00,ETF,Index,US
+2024-01-02,IEFA,30,72.50,ETF,International,Developed
+2024-01-02,AGG,25,95.80,ETF,Fixed Income,US
+2024-01-02,GLD,15,185.00,ETF,Commodities,Global

@@ -1,0 +1,32 @@
+﻿name: portfolio-analytics-reporting
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pandas
+  - numpy
+  - scipy
+  - statsmodels
+  - scikit-learn
+  - matplotlib
+  - plotly
+  - streamlit
+  - sqlalchemy
+  - pyyaml
+  - pytest
+  - black
+  - isort
+  - flake8
+  - jupyterlab
+  - requests
+  - python-dotenv
+  - jinja2
+  - pip
+  - pip:
+      - yfinance
+      - empyrical
+      - quantstats
+      - pandas-datareader
+      - flake8-pyproject
+

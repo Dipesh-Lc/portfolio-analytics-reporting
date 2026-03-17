@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "portfolio-analytics-reporting"
+version = "1.0.0"
+description = "Automated portfolio analytics, risk, and factor attribution platform"
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.flake8]
+max-line-length = 100
+ignore = ["E501", "W503", "W391"]
+per-file-ignores = [
+  "src/app/Home.py:E402",
+  "src/app/pages/01_Portfolio_Summary.py:E402",
+  "src/app/pages/02_Risk_Analytics.py:E402",
+  "src/pipelines/run_pipeline.py:E402",
+  "src/reporting/charts.py:E402",
+]
