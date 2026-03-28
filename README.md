@@ -4,6 +4,8 @@
 ![Streamlit](https://img.shields.io/badge/dashboard-streamlit-red)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+---
+
 > An automated internal portfolio analytics system that ingests holdings and market data, computes performance and risk metrics (Sharpe ratio, drawdown, VaR), estimates factor exposures using Fama-French regressions, and generates recurring stakeholder-ready reports and dashboards.
 
 ---
@@ -103,17 +105,15 @@ src/
 
 ## Technology Stack
 
-  Layer             Technology
-  ----------------- ----------------------------
-  Language          Python 3.11
-  Data Processing   Pandas, NumPy
-  Statistics        Statsmodels
-  Visualization     Plotly, Matplotlib
-  Dashboard         Streamlit
-  Storage           SQLite + SQLAlchemy
-  Testing           PyTest
-  Configuration     YAML
-  Data Sources      Yahoo Finance, Fama-French
+-  Language:          Python 3.11
+-  Data Processing:   Pandas, NumPy
+-  Statistics:        Statsmodels
+-  Visualization:     Plotly, Matplotlib
+-  Dashboard:         Streamlit
+-  Storage:           SQLite + SQLAlchemy
+-  Testing:           PyTest
+-  Configuration:     YAML
+-  Data Sources:      Yahoo Finance, Fama-French
 
 ---
 
